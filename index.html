@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Sharing Platform</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        h1 { text-align: center; }
+        .file-list { margin-top: 20px; }
+        .file-item { padding: 10px; background-color: #f4f4f4; margin: 10px 0; border-radius: 5px; }
+        .file-item a { color: #007bff; text-decoration: none; }
+        .file-item a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <h1>File Sharing Platform</h1>
+    <div class="file-list" id="fileList">
+        <p>Loading files...</p>
+    </div>
+
+    <script>
+        const username = 'Chanuka-KL';  // Replace with your GitHub username
+        const repo = 'EvilRepo';  // Replace with your GitHub repository name
+        const path = '';  // Replace with the folder path where your files are stored in the repo
+
+        async function fetchFiles() {
+            const url = `https://api.github.com/repos/${username}/${repo}/contents/${path}`;
+            const response = await fetch(url);
+            const files = await response.json();
+
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = '';  // Clear the loading message
+
+            if (files.message === "Not Found") {
+                fileList.innerHTML = "<p>No files found in the specified folder.</p>";
+                return;
+            }
+
+            files.forEach(file => {
+                const fileItem = document.createElement('div');
+                fileItem.classList.add('file-item');
+                const fileLink = document.createElement('a');
+
+                // Create the raw URL to download the file
+                const rawUrl = `https://raw.githubusercontent.com/${username}/${repo}/gh-pages/${path}/${file.name}`;
+                fileLink.href = rawUrl;
+
+                // Add the download attribute to force downloading the file
+                fileLink.setAttribute('download', file.name);
+                fileLink.textContent = file.name;
+
+                fileItem.appendChild(fileLink);
+                fileList.appendChild(fileItem);
+            });
+        }
+
+        window.onload = fetchFiles;
+    </script>
+</body>
+</html>
